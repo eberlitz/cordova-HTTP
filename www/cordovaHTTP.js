@@ -50,6 +50,14 @@ var http = {
         headers = mergeHeaders(this.headers, headers);
         return exec(success, failure, "CordovaHttpPlugin", "post", [url, params, headers]);
     },
+    put: function(url, params, headers, success, failure) {
+        headers = mergeHeaders(this.headers, headers);
+        return exec(success, failure, "CordovaHttpPlugin", "put", [url, params, headers]);
+    },
+    delete: function(url, params, headers, success, failure) {
+        headers = mergeHeaders(this.headers, headers);
+        return exec(success, failure, "CordovaHttpPlugin", "delete", [url, params, headers]);
+    },
     get: function(url, params, headers, success, failure) {
         headers = mergeHeaders(this.headers, headers);
         return exec(success, failure, "CordovaHttpPlugin", "get", [url, params, headers]);
@@ -106,7 +114,7 @@ if (typeof angular !== "undefined") {
     angular.module('cordovaHTTP', []).factory('cordovaHTTP', function($timeout, $q) {
         function makePromise(fn, args, async) {
             var deferred = $q.defer();
-            
+
             var success = function(response) {
                 if (async) {
                     $timeout(function() {
@@ -116,7 +124,7 @@ if (typeof angular !== "undefined") {
                     deferred.resolve(response);
                 }
             };
-            
+
             var fail = function(response) {
                 if (async) {
                     $timeout(function() {
@@ -126,15 +134,15 @@ if (typeof angular !== "undefined") {
                     deferred.reject(response);
                 }
             };
-            
+
             args.push(success);
             args.push(fail);
-            
+
             fn.apply(http, args);
-            
+
             return deferred.promise;
         }
-        
+
         var cordovaHTTP = {
             getBasicAuthHeader: http.getBasicAuthHeader,
             useBasicAuth: function(username, password) {
@@ -154,6 +162,12 @@ if (typeof angular !== "undefined") {
             },
             post: function(url, params, headers) {
                 return makePromise(http.post, [url, params, headers], true);
+            },
+            put: function(url, params, headers) {
+                return makePromise(http.put, [url, params, headers], true);
+            },
+            delete: function(url, params, headers) {
+                return makePromise(http.delete, [url, params, headers], true);
             },
             get: function(url, params, headers) {
                 return makePromise(http.get, [url, params, headers], true);
